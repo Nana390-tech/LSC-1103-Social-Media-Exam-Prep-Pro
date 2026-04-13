@@ -1,0 +1,886 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSC 1103 – Exam Prep Master</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#16a34a;--pk:#f97316;--gr:linear-gradient(135deg,#16a34a,#f97316);--li:#f0fdf4;--tx:#14532d;--mu:#6b7280;--gn:#15803d;--rd:#ef4444;--go:#f97316}
+body{font-family:'Segoe UI',sans-serif;background:var(--li);color:var(--tx);min-height:100vh}
+header{background:var(--gr);color:#fff;text-align:center;padding:18px 16px 12px}
+header h1{font-size:1.45rem;font-weight:900}
+header p{font-size:0.8rem;opacity:.85;margin-top:3px}
+.pb-wrap{background:rgba(255,255,255,.25);border-radius:20px;height:8px;margin:10px auto 4px;max-width:380px}
+.pb-fill{background:#fff;height:100%;border-radius:20px;transition:width .5s}
+.pb-lbl{font-size:.72rem;opacity:.88}
+.badges-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px 16px 0}
+.bslot{text-align:center;font-size:.6rem;color:#fff;opacity:.35;transition:all .4s;line-height:1.3}
+.bslot.earned{opacity:1;transform:scale(1.1)}
+.bslot .bi{font-size:1.5rem;display:block}
+.score-bar{background:rgba(22,163,74,.1);padding:7px 16px;display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--pu);border-bottom:1px solid #d1fae5}
+nav{display:flex;overflow-x:auto;gap:3px;padding:10px 10px 0;background:#fff;border-bottom:2px solid #e5e7eb;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.nb{padding:7px 12px;border:none;background:none;font-size:.75rem;font-weight:700;color:var(--mu);cursor:pointer;border-radius:8px 8px 0 0;white-space:nowrap;transition:all .2s}
+.nb.active{background:var(--gr);color:#fff}
+.nb.done{color:var(--gn)}
+.nb.locked{opacity:.38;cursor:not-allowed}
+.sec{display:none;padding:14px;max-width:720px;margin:0 auto}
+.sec.active{display:block}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 14px rgba(22,163,74,.07)}
+.stitle{font-size:1.1rem;font-weight:800;color:var(--pu);margin-bottom:3px}
+.ssub{font-size:.78rem;color:var(--mu);margin-bottom:14px}
+.topic-tag{display:inline-block;background:#f0fdf4;color:var(--pu);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #bbf7d0;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+
+/* SAVE BAR */
+.save-bar{background:linear-gradient(135deg,#fff7ed,#f0fdf4);border:1.5px solid #fed7aa;border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.save-bar-left{font-size:.78rem;color:#92400e;font-weight:600}
+.save-bar-left span{display:block;font-size:.7rem;color:var(--mu);font-weight:400;margin-top:2px}
+.save-btns{display:flex;gap:7px;flex-wrap:wrap}
+.btn-save{background:var(--pk);color:#fff;border:none;border-radius:10px;padding:7px 14px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-save:hover{opacity:.88;transform:translateY(-1px)}
+.btn-load{background:#fff;color:var(--pk);border:2px solid var(--pk);border-radius:10px;padding:7px 14px;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-load:hover{background:#fff7ed}
+.save-toast{position:fixed;bottom:20px;right:20px;background:#14532d;color:#fff;padding:10px 16px;border-radius:12px;font-size:.78rem;font-weight:700;z-index:999;opacity:0;transform:translateY(10px);transition:all .35s;pointer-events:none}
+.save-toast.show{opacity:1;transform:translateY(0)}
+
+/* MCQ */
+.qblock{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f3f4f6}
+.qblock:last-child{border-bottom:none}
+.qblock p{font-weight:700;font-size:.87rem;line-height:1.5;margin-bottom:8px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{padding:9px 13px;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:.82rem;background:#fff;text-align:left;transition:all .18s}
+.opt:hover:not(.dis){border-color:var(--pu);background:#f0fdf4}
+.opt.sel{border-color:var(--pu);background:#f0fdf4}
+.opt.cor{border-color:var(--gn)!important;background:#d1fae5!important;color:#065f46}
+.opt.wrg{border-color:var(--rd)!important;background:#fee2e2!important;color:#991b1b}
+.opt.dis{cursor:default}
+.q-fb{font-size:.74rem;font-weight:700;margin-top:6px;padding:5px 10px;border-radius:8px;display:none}
+.q-fb.ok{display:block;color:#065f46;background:#dcfce7;border:1px solid #86efac}
+.q-fb.no{display:block;color:#991b1b;background:#fee2e2;border:1px solid #fca5a5}
+
+/* MATCHING */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mcol{display:flex;flex-direction:column;gap:7px}
+.mi{padding:9px 11px;border-radius:10px;border:2px solid #e5e7eb;font-size:.77rem;cursor:pointer;transition:all .18s;background:#fff;text-align:center;line-height:1.4}
+.mi:hover:not(.mat){border-color:var(--pu);background:#f0fdf4}
+.mi.sel{border-color:var(--pu);background:#f0fdf4}
+.mi.mat{border-color:var(--gn);background:#d1fae5;cursor:default;color:#065f46}
+.mi.flash{border-color:var(--rd);background:#fee2e2;animation:shk .32s}
+@keyframes shk{0%,100%{transform:translateX(0)}33%{transform:translateX(-5px)}66%{transform:translateX(5px)}}
+
+/* DO DON'T */
+.ddi{display:flex;align-items:center;gap:10px;padding:11px;border:2px solid #e5e7eb;border-radius:12px;margin-bottom:9px}
+.ddt{flex:1;font-size:.82rem;line-height:1.45}
+.ddb-wrap{display:flex;gap:5px;flex-shrink:0}
+.ddb{padding:6px 12px;border:2px solid #e5e7eb;border-radius:8px;font-weight:700;font-size:.76rem;cursor:pointer;background:#fff;transition:all .18s;white-space:nowrap}
+.ddb.do-sel{border-color:var(--pu);background:#f0fdf4}
+.ddb.dont-sel{border-color:var(--pk);background:#fff7ed}
+.ddb.cor-do{border-color:var(--gn)!important;background:#d1fae5!important;color:#065f46}
+.ddb.cor-dont{border-color:var(--rd)!important;background:#fee2e2!important;color:#991b1b}
+.ddb.wrg-pick{border-color:var(--rd);background:#fee2e2}
+.ddb.dis{cursor:default}
+
+/* WRITING */
+.prompt-card{background:#fff;border-radius:14px;padding:16px;margin-bottom:16px;border:2px solid #d1fae5;box-shadow:0 2px 10px rgba(22,163,74,.06)}
+.prompt-num{font-size:.7rem;font-weight:700;color:#fff;background:var(--gr);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px}
+.spec-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:.8rem}
+.spec-table tr{border-bottom:1px solid #f0fdf4}
+.spec-table td:first-child{font-weight:700;color:var(--pu);padding:6px 10px 6px 0;width:38%;white-space:nowrap;vertical-align:top}
+.spec-table td:last-child{padding:6px 0;color:var(--tx);line-height:1.5}
+.appeal-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.78rem}
+.ap-pathos{background:#fce7f3;color:#be185d}
+.ap-logos{background:#dbeafe;color:#1d4ed8}
+.ap-ethos{background:#fef9c3;color:#a16207}
+textarea{width:100%;min-height:110px;border:2px solid #e5e7eb;border-radius:10px;padding:11px;font-size:.82rem;resize:vertical;font-family:inherit;transition:border-color .2s}
+textarea:focus{outline:none;border-color:var(--pu)}
+.wc{font-size:.72rem;color:var(--mu);text-align:right;margin-top:3px}
+.wc.ok{color:var(--gn);font-weight:700}
+.hint-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:11px;margin:7px 0;font-size:.78rem;display:none}
+.hint-box h5{color:#92400e;margin-bottom:5px}
+.hint-box ul{padding-left:15px}
+.hint-box li{margin-bottom:3px;color:#78350f;line-height:1.4}
+.sample-box{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px;margin-top:7px;font-size:.78rem;display:none}
+.sample-box h5{color:#166534;margin-bottom:6px}
+.sample-box .stxt{color:#15803d;line-height:1.7;white-space:pre-wrap}
+.pbox{background:linear-gradient(135deg,#f0fdf4,#fff7ed);border-radius:12px;padding:13px;margin-bottom:10px;border-left:4px solid var(--pu)}
+.pbox h4{font-size:.82rem;font-weight:700;color:var(--pu);margin-bottom:5px}
+.pbox p{font-size:.8rem;line-height:1.6}
+
+/* BUTTONS */
+.btn{padding:10px 20px;border:none;border-radius:12px;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s}
+.btn-p{background:var(--gr);color:#fff}
+.btn-p:hover{opacity:.9;transform:translateY(-1px)}
+.btn-s{background:#fff;color:var(--pu);border:2px solid var(--pu)}
+.btn-h{background:#fffbeb;color:#92400e;border:1px solid #fde68a;font-size:.76rem;padding:6px 12px;border-radius:8px;cursor:pointer}
+.btn-sa{background:#f0fdf4;color:#166534;border:1px solid #86efac;font-size:.76rem;padding:6px 12px;border-radius:8px;cursor:pointer}
+.btns-row{display:flex;gap:7px;margin:8px 0;flex-wrap:wrap}
+
+/* RESULTS */
+.res{text-align:center;padding:16px}
+.sc-circle{width:76px;height:76px;border-radius:50%;background:var(--gr);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;margin:0 auto 10px}
+.sc-msg{font-size:.95rem;font-weight:700;margin-bottom:10px}
+.badge-pop{text-align:center;padding:18px;animation:pop .5s}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+.badge-pop .bico{font-size:3.5rem}
+.badge-pop h3{font-size:1.1rem;font-weight:800;color:var(--go);margin:6px 0 3px}
+.badge-pop p{font-size:.8rem;color:var(--mu)}
+.all-done-box{background:var(--gr);color:#fff;border-radius:14px;padding:20px;text-align:center;margin-top:12px}
+.all-done-box h3{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.all-done-box p{font-size:.82rem;opacity:.9;margin-bottom:12px}
+
+/* CERT */
+.cert-outer{border:4px solid var(--pu);border-radius:20px;padding:28px 24px;text-align:center;background:linear-gradient(135deg,#f0fdf4,#fff7ed);max-width:560px;margin:0 auto}
+.cert-top{font-size:.7rem;letter-spacing:3px;color:var(--pu);text-transform:uppercase;margin-bottom:6px}
+.cert-hl{font-size:1.4rem;font-weight:900;color:var(--pu);margin:6px 0}
+.cert-sub{font-size:.8rem;color:var(--mu);margin-bottom:14px}
+.cert-name{font-size:1.7rem;font-weight:800;color:var(--pk);border-bottom:2px solid var(--pk);display:inline-block;padding-bottom:3px;margin:10px 0}
+.cert-course{font-size:.85rem;margin:6px 0 14px}
+.cert-brow{display:flex;justify-content:center;gap:14px;margin:12px 0;flex-wrap:wrap;font-size:1.3rem}
+.cert-sig{margin-top:18px;border-top:1px solid #e5e7eb;padding-top:10px;font-size:.76rem;color:var(--mu)}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.hg-item{background:#f0fdf4;border-radius:12px;padding:12px;text-align:center;font-size:.78rem}
+.hg-item .ic{font-size:1.4rem;display:block;margin-bottom:4px}
+.hg-item strong{color:var(--pu)}
+
+@media(max-width:480px){
+  .match-grid{grid-template-columns:1fr}
+  .mcol{flex-direction:row;flex-wrap:wrap}
+  .mi{flex:1;min-width:120px;font-size:.72rem}
+  header h1{font-size:1.2rem}
+  .spec-table td:first-child{width:44%}
+  .save-bar{flex-direction:column;align-items:flex-start}
+}
+@media print{
+  body>*{display:none!important}
+  #cert-section,#cert-section *{display:revert!important}
+  .nb,.score-bar,.btn,.save-bar{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="save-toast" id="toast"></div>
+
+<header>
+  <h1>📝 LSC 1103 Exam Prep Master</h1>
+  <p>Professional Written Communication · HCT Abu Dhabi</p>
+  <div class="pb-wrap"><div class="pb-fill" id="pbFill" style="width:0%"></div></div>
+  <div class="pb-lbl" id="pbLbl">0 / 5 sections completed</div>
+  <div class="badges-row">
+    <div class="bslot" id="b0"><span class="bi">🏅</span>Social<br>Media</div>
+    <div class="bslot" id="b1"><span class="bi">🏅</span>Email<br>Vocab</div>
+    <div class="bslot" id="b2"><span class="bi">🏅</span>Email<br>Pro</div>
+    <div class="bslot" id="b3"><span class="bi">🏅</span>Content<br>Creator</div>
+    <div class="bslot" id="b4"><span class="bi">🏅</span>Pro<br>Writer</div>
+  </div>
+</header>
+
+<div class="score-bar">
+  <span>⭐ Score: <span id="totScore">0</span> pts</span>
+  <span>✅ Done: <span id="doneCnt">0</span>/5</span>
+</div>
+
+<nav>
+  <button class="nb active" onclick="goSec('home')">🏠 Home</button>
+  <button class="nb" id="n1" onclick="goSec(1)">📱 Social Media</button>
+  <button class="nb" id="n2" onclick="goSec(2)">📧 Email Vocab</button>
+  <button class="nb" id="n3" onclick="goSec(3)">✉️ Email Pro</button>
+  <button class="nb" id="n4" onclick="goSec(4)">✍️ SM Writing</button>
+  <button class="nb" id="n5" onclick="goSec(5)">📝 Email Writing</button>
+  <button class="nb locked" id="nC" onclick="goSec('cert')">🎓 Certificate</button>
+</nav>
+
+<!-- HOME -->
+<div class="sec active" id="home-section">
+  <div class="card" style="text-align:center">
+    <div style="font-size:2.2rem;margin-bottom:10px">🎯</div>
+    <h2 style="color:var(--pu);margin-bottom:7px">Welcome, Exam Warrior!</h2>
+    <p style="color:var(--mu);font-size:.82rem;line-height:1.6">Complete all <strong>5 sections</strong> to earn your <strong>Exam Ready Certificate 🎓</strong>. Each section unlocks a badge!</p>
+    <div class="home-grid">
+      <div class="hg-item"><span class="ic">📱</span><strong>Section 1</strong><br>Social Media MCQs<br><small>20 questions</small></div>
+      <div class="hg-item"><span class="ic">📧</span><strong>Section 2</strong><br>Email Vocab Match<br><small>10 pairs</small></div>
+      <div class="hg-item"><span class="ic">✉️</span><strong>Section 3</strong><br>Email Pro Skills<br><small>MCQs + Do/Don't</small></div>
+      <div class="hg-item"><span class="ic">✍️</span><strong>Section 4</strong><br>SM Post Writing<br><small>3 structured tasks</small></div>
+    </div>
+    <p style="font-size:.75rem;color:var(--mu);margin-bottom:14px">+ 📝 <strong>Section 5:</strong> Professional Email Writing (3 prompts with hints & samples)</p>
+    <button class="btn btn-p" onclick="goSec(1)" style="margin-bottom:12px">Start Now → 📱</button>
+  </div>
+  <!-- HOME SAVE BAR -->
+  <div class="save-bar">
+    <div class="save-bar-left">💾 Progress Manager
+      <span>Save your work as a JSON file or reload a previous session.</span>
+    </div>
+    <div class="save-btns">
+      <button class="btn-save" onclick="saveProgress()">💾 Save Progress</button>
+      <label class="btn-load" style="cursor:pointer">📂 Load Progress<input type="file" accept=".json" style="display:none" onchange="loadProgress(event)"></label>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:.72rem;color:var(--mu);margin-top:4px">Designed by: Nazila Motahari | LSC 1103 | HCT Abu Dhabi</p>
+</div>
+
+<!-- S1 -->
+<div class="sec" id="s1">
+  <div class="card">
+    <div class="stitle">📱 Section 1: Social Media Knowledge</div>
+    <div class="ssub">20 questions covering: <strong>Rhetorical Appeals</strong> · <strong>Purposes of Social Media</strong> · <strong>Rhetorical Situation Elements</strong> · <strong>Features of a Good Announcement</strong>. You need <strong>14/20</strong> to earn your 🏅 badge!</div>
+    <div id="s1Qs"></div>
+    <div id="s1Res" style="display:none"></div>
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn btn-p" id="s1Btn" onclick="checkS1()">Check My Answers ✓</button>
+    </div>
+  </div>
+  <div class="save-bar">
+    <div class="save-bar-left">💾 Save Section 1 Progress
+      <span>Saves your answers for this section and any previously completed sections.</span>
+    </div>
+    <div class="save-btns">
+      <button class="btn-save" onclick="saveProgress()">💾 Save Now</button>
+      <label class="btn-load" style="cursor:pointer">📂 Load Save<input type="file" accept=".json" style="display:none" onchange="loadProgress(event)"></label>
+    </div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="sec" id="s2">
+  <div class="card">
+    <div class="stitle">📧 Section 2: Email Vocabulary Matching</div>
+    <div class="ssub">Click a <strong>word</strong>, then click its matching <strong>definition</strong>. Match all 10 to earn your 🏅 badge!</div>
+    <div id="s2Match"></div>
+    <div id="s2Res" style="display:none"></div>
+  </div>
+  <div class="save-bar">
+    <div class="save-bar-left">💾 Save Sections 1–2 Progress
+      <span>Saves your vocabulary matches and all previous section data.</span>
+    </div>
+    <div class="save-btns">
+      <button class="btn-save" onclick="saveProgress()">💾 Save Now</button>
+      <label class="btn-load" style="cursor:pointer">📂 Load Save<input type="file" accept=".json" style="display:none" onchange="loadProgress(event)"></label>
+    </div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="sec" id="s3">
+  <div class="card">
+    <div class="stitle">✉️ Section 3: Professional Email Skills</div>
+    <div class="ssub">Part A: MCQs (8 Qs) + Part B: Do or Don't? (7 items) — need <strong>11/15</strong> to pass!</div>
+    <h3 style="font-size:.88rem;font-weight:700;color:var(--pu);margin:10px 0 8px">📋 Part A: Multiple Choice</h3>
+    <div id="s3Mcq"></div>
+    <h3 style="font-size:.88rem;font-weight:700;color:var(--pu);margin:14px 0 6px">✅ Part B: Do or Don't?</h3>
+    <p style="font-size:.76rem;color:var(--mu);margin-bottom:10px">Decide if each practice is something you SHOULD do (✅ DO) or AVOID (❌ DON'T) in professional emails.</p>
+    <div id="s3Dd"></div>
+    <div id="s3Res" style="display:none"></div>
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn btn-p" id="s3Btn" onclick="checkS3()">Check My Answers ✓</button>
+    </div>
+  </div>
+  <div class="save-bar">
+    <div class="save-bar-left">💾 Save Sections 1–3 Progress
+      <span>Saves your email skills answers and all previous section data.</span>
+    </div>
+    <div class="save-btns">
+      <button class="btn-save" onclick="saveProgress()">💾 Save Now</button>
+      <label class="btn-load" style="cursor:pointer">📂 Load Save<input type="file" accept=".json" style="display:none" onchange="loadProgress(event)"></label>
+    </div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="sec" id="s4">
+  <div class="card">
+    <div class="stitle">✍️ Section 4: Social Media Post Writing</div>
+    <div class="ssub">Write a post for each scenario using the exact specifications below. Use hints, then reveal the sample to compare!</div>
+    <div id="s4Prompts"></div>
+    <div id="s4Res" style="display:none"></div>
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn btn-p" id="s4Btn" onclick="checkS4()">I've Finished Writing ✓</button>
+    </div>
+  </div>
+  <div class="save-bar">
+    <div class="save-bar-left">💾 Save Sections 1–4 Progress
+      <span>Saves your social media writing and all previous section data.</span>
+    </div>
+    <div class="save-btns">
+      <button class="btn-save" onclick="saveProgress()">💾 Save Now</button>
+      <label class="btn-load" style="cursor:pointer">📂 Load Save<input type="file" accept=".json" style="display:none" onchange="loadProgress(event)"></label>
+    </div>
+  </div>
+</div>
+
+<!-- S5 -->
+<div class="sec" id="s5">
+  <div class="card">
+    <div class="stitle">📝 Section 5: Professional Email Writing</div>
+    <div class="ssub">Write 3 professional emails. Use the structure hints, then compare with the sample answer!</div>
+    <div id="s5Prompts"></div>
+    <div id="s5Res" style="display:none"></div>
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn btn-p" id="s5Btn" onclick="checkS5()">I've Finished Writing ✓</button>
+    </div>
+  </div>
+  <div class="save-bar">
+    <div class="save-bar-left">💾 Save All Sections Progress
+      <span>Saves your full session including all 5 sections.</span>
+    </div>
+    <div class="save-btns">
+      <button class="btn-save" onclick="saveProgress()">💾 Save Now</button>
+      <label class="btn-load" style="cursor:pointer">📂 Load Save<input type="file" accept=".json" style="display:none" onchange="loadProgress(event)"></label>
+    </div>
+  </div>
+</div>
+
+<!-- CERT -->
+<div class="sec" id="cert-section">
+  <div class="card" style="text-align:center;max-width:500px;margin:0 auto 14px">
+    <div style="font-size:2rem;margin-bottom:8px">🎉</div>
+    <h2 style="color:var(--pu);margin-bottom:6px">All Sections Complete!</h2>
+    <p style="color:var(--mu);font-size:.82rem;margin-bottom:14px">Enter your name below to generate your personalised certificate.</p>
+    <input type="text" id="cName" placeholder="Your Full Name" style="width:100%;max-width:280px;padding:10px;border:2px solid var(--pu);border-radius:10px;font-size:.95rem;text-align:center;margin-bottom:12px">
+    <br>
+    <button class="btn btn-p" onclick="makeCert()">Generate My Certificate 🎓</button>
+  </div>
+  <div id="certBox" style="display:none;padding:14px">
+    <div class="cert-outer">
+      <div class="cert-top">Higher Colleges of Technology · Abu Dhabi</div>
+      <div style="font-size:2rem;margin:6px 0">🎓</div>
+      <div class="cert-hl">Certificate of Achievement</div>
+      <div class="cert-sub">LSC 1103 – Professional Written Communication</div>
+      <p style="font-size:.82rem;color:var(--mu)">This certifies that</p>
+      <div class="cert-name" id="cNameOut">Student Name</div>
+      <div class="cert-course">has successfully completed all activities in<br><strong>LSC 1103 Exam Prep Master</strong><br>and is <strong>✅ Exam Ready!</strong></div>
+      <div class="cert-brow"><span>📱🏅</span><span>📧🏅</span><span>✉️🏅</span><span>✍️🏅</span><span>📝🏅</span></div>
+      <p style="font-size:.82rem;color:var(--mu)">Total Points Earned: <strong id="cScore">0</strong> ⭐</p>
+      <div class="cert-sig"><strong>Nazila Motahari</strong><br>English & ESP Instructor | HCT Abu Dhabi<br><span id="cDate"></span></div>
+      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-s" onclick="shareCert()">📤 Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+
+const q1=[
+
+  // ── RHETORICAL APPEALS — scenario-based, like Google Form ──────────────
+  {topic:"Rhetorical Appeals – Logos",
+   q:`A company posts: <em>"Our new energy drink contains essential vitamins that boost focus and stamina. Research shows it improves performance by 40%!"</em><br><br>What rhetorical appeal is used?`,
+   o:["Pathos","Ethos","Logos","To Call for Action"],a:2},
+
+  {topic:"Rhetorical Appeals – Pathos",
+   q:`A charity posts: <em>"Every day, thousands of families go hungry. Your small donation can provide food and hope. Join us in making a difference."</em><br><br>Which rhetorical appeal is used?`,
+   o:["Logos","Ethos","To Advertise","Pathos"],a:3},
+
+  {topic:"Rhetorical Appeals – Ethos",
+   q:`A famous doctor posts: <em>"As a cardiologist with 20 years of experience, I recommend this supplement for heart health."</em><br><br>Which rhetorical appeal is used?`,
+   o:["Logos","Pathos","Ethos","To Inform"],a:2},
+
+  {topic:"Rhetorical Appeals – Logos",
+   q:`A mobile phone company posts: <em>"Our new smartphone features AI technology that enhances battery life by 50%. The fastest phone ever!"</em><br><br>Which rhetorical appeal is used?`,
+   o:["Ethos","Pathos","To Persuade","Logos"],a:3},
+
+  {topic:"Rhetorical Appeals – Pathos",
+   q:`Which of the following social media posts <strong>best represents pathos</strong>?`,
+   o:[`"Doctors recommend eating more vegetables for a healthier life."`,
+      `"With my PhD in nutrition, I can guide you to better eating habits."`,
+      `"Think of the happy moments you'll share with family when you cook nutritious meals!"`,
+      `"A balanced diet contains proteins, carbohydrates, and vitamins."`],a:2},
+
+  {topic:"Rhetorical Appeals – Ethos",
+   q:`Which of the following social media posts <strong>uses ethos</strong>?`,
+   o:[`"I have 10 years of experience in digital marketing, and I can help grow your brand!"`,
+      `"Studies show that digital ads increase sales by 30%."`,
+      `"Don't miss out! Sign up for our free marketing webinar now!"`,
+      `"Using bright colors in marketing can make your brand more memorable!"`],a:0},
+
+  // ── PURPOSES OF SOCIAL MEDIA — scenario-based ──────────────────────────
+  {topic:"Purposes of Social Media",
+   q:`A university posts: <em>"Sign up for our online course today! Limited slots available. Improve your career with expert-led training."</em><br><br>What is the purpose of this post?`,
+   o:["To Warn","To Persuade","To Inform","To Announce"],a:1},
+
+  {topic:"Purposes of Social Media",
+   q:`A social media post says: <em>"Cybersecurity threats are increasing. Always update your passwords and enable two-factor authentication to stay safe!"</em><br><br>What is the purpose of this post?`,
+   o:["To Inform","To Advertise","To Call for Action","To Announce"],a:2},
+
+  {topic:"Purposes of Social Media",
+   q:`A company posts: <em>"Flash Sale! Get 50% off all electronics this weekend only! Don't miss out!"</em><br><br>What is the purpose of this post?`,
+   o:["To Inform","To Advertise","To Persuade","To Warn"],a:1},
+
+  {topic:"Purposes of Social Media",
+   q:`A school posts: <em>"Attention students: The IT helpdesk will be closed for maintenance from 5 PM to 9 PM tomorrow. Plan accordingly!"</em><br><br>What is the purpose of this post?`,
+   o:["To Advertise","To Call for Action","To Announce","To Warn"],a:2},
+
+  {topic:"Purposes of Social Media",
+   q:`A government agency posts: <em>"Flood warnings have been issued for the coastal areas. Residents should move to higher ground immediately."</em><br><br>What is the purpose of this post?`,
+   o:["To Inform","To Announce","To Advertise","To Warn"],a:3},
+
+  {topic:"Purposes of Social Media",
+   q:`What is the main purpose of a <strong>call-to-action</strong> post on social media?`,
+   o:["To entertain the audience","To introduce a new product","To encourage the audience to take a specific action","To provide a warning"],a:2},
+
+  // ── RHETORICAL SITUATION — identify the element from underlined phrase ──
+  {topic:"Rhetorical Situation – Audience",
+   q:`A social media post states: <em>"🚀 <u><strong>Calling all young entrepreneurs!</strong></u> Our startup incubator is launching a mentorship programme to help you turn your ideas into reality."</em><br><br>Which rhetorical situation element does the underlined phrase represent?`,
+   o:["The Message","The Writer","The Audience","The Context"],a:2},
+
+  {topic:"Rhetorical Situation – Writer",
+   q:`A LinkedIn post states: <em>"<u><strong>As the founder of GreenTech Solutions, I am proud to announce</strong></u> our latest initiative to reduce plastic waste."</em><br><br>Which rhetorical situation element does the underlined phrase represent?`,
+   o:["The Message","The Writer","The Audience","The Purpose"],a:1},
+
+  {topic:"Rhetorical Situation – Message",
+   q:`A restaurant's Instagram post reads: <em>"📢 <u><strong>Our new vegan menu is now available!</strong></u> Try our delicious plant-based options today! #HealthyEating"</em><br><br>Which rhetorical situation element does the underlined phrase represent?`,
+   o:["The Writer","The Audience","The Context","The Message"],a:3},
+
+  {topic:"Rhetorical Situation – Context",
+   q:`A government agency posts: <em>"<u><strong>Due to the ongoing heatwave,</strong></u> residents are advised to stay indoors between 12 PM–4 PM. Stay hydrated and safe!"</em><br><br>Which rhetorical situation element does the underlined phrase represent?`,
+   o:["The Message","The Writer","The Audience","The Context"],a:3},
+
+  {topic:"Rhetorical Situation – Audience",
+   q:`A local government page posts: <em>"<u><strong>Attention residents:</strong></u> Due to a water supply issue, there will be a temporary shutdown from 10 AM to 2 PM tomorrow."</em><br><br>Which rhetorical situation element does the underlined phrase represent?`,
+   o:["The Writer","The Message","The Audience","The Purpose"],a:2},
+
+  // ── FEATURES OF A GOOD ANNOUNCEMENT — from Image 2 ─────────────────────
+  {topic:"Features of a Good Announcement",
+   q:"Which feature of a good social media announcement <strong>ensures the message is easily understood without confusion</strong>?",
+   o:["Conciseness","Engagement","Professionalism","Clarity"],a:3},
+
+  {topic:"Features of a Good Announcement",
+   q:"Which feature describes <strong>delivering the message briefly and directly, avoiding unnecessary words</strong>?",
+   o:["Clarity","Conciseness","Structure","Professionalism"],a:1},
+
+  {topic:"Features of a Good Announcement",
+   q:"A social media post is well-organized and highlights the main point in the first sentence. Which feature does this demonstrate?",
+   o:["Engagement","Professionalism","Clarity","Structure"],a:3}
+];
+
+const q2=[
+  {w:"Acknowledge",d:"To confirm that something has been received or noticed"},
+  {w:"Attachment",d:"A file sent along with an email"},
+  {w:"Clarify",d:"To make something easier to understand"},
+  {w:"Reschedule",d:"To arrange a meeting or appointment for a different time"},
+  {w:"Apologize",d:"To say that you are sorry for something"},
+  {w:"Urgent",d:"Requiring immediate attention or action"},
+  {w:"Subject line",d:"A short title that describes what the email is about"},
+  {w:"Salutation",d:"A formal greeting used at the start of an email"},
+  {w:"Formal tone",d:"Professional language that follows official rules and conventions"},
+  {w:"Closing",d:"A polite phrase used to end an email (e.g., 'Kind regards')"}
+];
+
+const q3MCQ=[
+  {q:"Which of the following is a correct and professional email salutation?",o:["Hey!","Yo Professor 👋","Dear Dr. Smith,","Hi there!!!"],a:2},
+  {q:"Which part of an email briefly describes its content or purpose?",o:["Salutation","Closing","Attachment","Subject line"],a:3},
+  {q:"Which closing phrase is MOST appropriate for a professional email?",o:["See ya!","Kind regards,","Bye bye,","TTYL 😊"],a:1},
+  {q:"What information should be included in a professional student email signature?",o:["Your hobbies and interests","Your social media handles","Your full name, student ID, and CRN","Your full name only"],a:2},
+  {q:"Which of these subject lines is the MOST professional?",o:["HELP ME NOW!!!","hey","pls read asap","Request for Extension – Fatima Al Mansouri"],a:3},
+  {q:"Which of the following should you ALWAYS do before sending a professional email?",o:["Add lots of emojis","Use slang like 'gonna' and 'wanna'","Write in ALL CAPS","Proofread for grammar and spelling"],a:3},
+  {q:"What is the correct structural ORDER of a professional email?",o:["Body → Salutation → Subject → Closing","Closing → Body → Subject → Salutation","Subject line → Salutation → Body → Closing → Signature","Salutation → Subject → Body → Signature → Closing"],a:2},
+  {q:"Which sentence is MOST appropriate as an opening line in a professional email?",o:["I need help RIGHT NOW!!","How ya doin, Prof? 😂","Sup! 👋","I hope this email finds you well."],a:3}
+];
+
+const q3DD=[
+  {t:"Using capital letters for the ENTIRE email to show importance",a:"dont"},
+  {t:"Beginning your email with 'Dear Dr. [Name],'",a:"do"},
+  {t:"Using emojis, slang, and abbreviations like 'u' and 'r'",a:"dont"},
+  {t:"Including your full name, student ID, and CRN in your signature",a:"do"},
+  {t:"Writing a clear, specific subject line before sending",a:"do"},
+  {t:"Using expressions like 'wanna', 'gonna', and 'ya' in the body",a:"dont"},
+  {t:"Proofreading your email for grammar and spelling errors before clicking Send",a:"do"}
+];
+
+// Section 4 — SM Writing tasks
+// Task 1 changed from exam question (Pathos/HCT Admin/call to action/exam stress)
+const q4=[
+  {
+    specs:[
+      {label:"Rhetorical Appeal",val:"Logos",badge:"ap-logos"},
+      {label:"Writer",val:"HCT Student Council"},
+      {label:"Audience",val:"HCT Students"},
+      {label:"Purpose",val:"To announce"},
+      {label:"Message",val:"HCT is launching a new peer mentorship programme to help first-year students succeed academically"},
+      {label:"Context / Culture",val:"HCT campuses, UAE"}
+    ],
+    wlimit:"50–60",
+    hints:["Include a specific fact or statistic to appeal to logos (e.g., numbers, evidence of success)","Write as the HCT Student Council making an official announcement","Clearly state WHAT the programme is and WHO it benefits","End with a clear next step for interested students","Keep within 50–60 words"],
+    s:`📢 Research shows that students with a peer mentor are 40% more likely to succeed in their first year. HCT Student Council is proud to announce the launch of the HCT Peer Mentorship Programme — connecting first-year students with experienced seniors for academic support and guidance. Sign up at the Student Council office today! 🎓 #HCT #PeerMentorship #StudentSuccess`
+  },
+  {
+    specs:[
+      {label:"Rhetorical Appeal",val:"Pathos",badge:"ap-pathos"},
+      {label:"Writer",val:"HCT Health & Wellness Centre"},
+      {label:"Audience",val:"HCT Students"},
+      {label:"Purpose",val:"To call for action"},
+      {label:"Message",val:"Students should donate to the HCT Ramadan Food Drive to support families in need in the local community"},
+      {label:"Context / Culture",val:"HCT campuses, UAE — Ramadan season"}
+    ],
+    wlimit:"50–60",
+    hints:["Use emotional words: 'kindness', 'warmth', 'community', 'family', 'giving'","Write in a warm and heartfelt tone that connects with the spirit of Ramadan","Clearly tell students what action to take (donate, bring items, visit a location)","Use 1–2 relevant emojis to add warmth","Stay within 50–60 words"],
+    s:`🌙 This Ramadan, let's come together to make a real difference. Families in our community are struggling — and your generosity can bring warmth to their homes. 💛 The HCT Wellness Centre is collecting food donations throughout Ramadan. Drop off non-perishable items at the main reception before April 30th. Every contribution counts. Together, we give. ❤️ #HCT #RamadanGiving #Community`
+  },
+  {
+    specs:[
+      {label:"Rhetorical Appeal",val:"Ethos",badge:"ap-ethos"},
+      {label:"Writer",val:"HCT Career Services"},
+      {label:"Audience",val:"HCT Final-Year Students"},
+      {label:"Purpose",val:"To advertise"},
+      {label:"Message",val:"HCT Career Services is offering free CV writing workshops led by certified career coaches to help students prepare for employment"},
+      {label:"Context / Culture",val:"HCT campuses, UAE — graduation season"}
+    ],
+    wlimit:"50–60",
+    hints:["Establish credibility early — mention who is running the workshops (certified professionals, HCT Career Services)","Highlight what students will gain from attending","Include a specific detail (date, location, or registration info)","Keep the tone authoritative and encouraging","Stay within 50–60 words"],
+    s:`🎓 Ready to land your first job? HCT Career Services is offering FREE CV Writing Workshops, led by our certified career coaches with over 10 years of recruitment experience. Learn how to write a CV that stands out. Open to all final-year students. Register at the Career Services office — spots are limited! 💼 #HCT #CareerReady #CVWorkshop`
+  }
+];
+
+const q5=[
+  {ti:"Email 1: Apology for Absence",
+   sc:"You missed your LSC 1103 class last Tuesday because you were unwell. Write a professional email to your instructor (Ms. Motahari) apologizing and politely asking for the missed materials.",
+   hints:["Subject: Absence from LSC 1103 – [Your Name] – [Date]","Salutation: Dear Ms. Motahari,","Opening: I hope this email finds you well.","Explain your reason briefly and professionally","Apologize sincerely","Ask politely for missed materials or tasks","Closing: Kind regards,","Signature: Full name | Student ID | CRN"],
+   s:`Subject: Absence from LSC 1103 – Fatima Al Mansouri – 14 April 2025\n\nDear Ms. Motahari,\n\nI hope this email finds you well. I am writing to apologize for my absence from your LSC 1103 class last Tuesday. Unfortunately, I was unwell and unable to attend.\n\nI understand that I missed important content, and I take full responsibility for catching up. Could you please share any materials, notes, or tasks from the session?\n\nThank you for your understanding.\n\nKind regards,\nFatima Ali Al Mansouri\nH00234567 | CRN 54321`},
+  {ti:"Email 2: Requesting an Appointment",
+   sc:"You would like to meet your academic advisor to discuss your course selection for next semester. Write a professional email requesting an appointment.",
+   hints:["Subject: Request for Appointment – [Your Name]","State your purpose clearly in the first sentence","Give a brief reason for the meeting","Offer 2 available time slots","Be polite and professional throughout","Use a formal closing"],
+   s:`Subject: Request for Appointment – Ahmed Al Hammadi\n\nDear Ms. Johnson,\n\nI hope you are doing well. I am writing to request an appointment to discuss my course selection for next semester. I would like your guidance to ensure I choose the right courses.\n\nI am available Monday 21 April between 10:00–12:00, or Wednesday 23 April in the afternoon. Please let me know what works best for you.\n\nYours sincerely,\nAhmed Khalid Al Hammadi\nH00345678 | CRN 67890`},
+  {ti:"Email 3: Requesting Feedback on an Assignment",
+   sc:"You submitted a written assignment last week for LSC 1103. You would like feedback from your instructor to help you improve before the final exam.",
+   hints:["Subject: Request for Assignment Feedback – [Your Name]","Reference the specific assignment you submitted","Explain why you want feedback (exam preparation)","Show appreciation in advance","Keep it concise — 3 short paragraphs","End with a formal closing and full signature"],
+   s:`Subject: Request for Assignment Feedback – Mariam Al Zaabi\n\nDear Ms. Motahari,\n\nI hope this message finds you well. I am writing to kindly request feedback on the written assignment I submitted last week for LSC 1103.\n\nWith the final exam approaching, I am eager to understand my strengths and areas for development. Even brief notes would be very helpful for my preparation.\n\nThank you so much for your time.\n\nKind regards,\nMariam Salem Al Zaabi\nH00456789 | CRN 12345`}
+];
+
+// ═══════════ STATE ═══════════
+let done=[false,false,false,false,false],tot=0;
+let a1={},a3m={},a3d={};
+let m2={selW:null,selD:null,count:0,shuf:[]};
+
+// ═══════════ BUILD ═══════════
+function buildAll(){bS1();bS2();bS3();bS4();bS5();}
+
+function bS1(){
+  const c=document.getElementById('s1Qs');c.innerHTML='';
+  q1.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='qblock';
+    d.innerHTML=`<div class="topic-tag">${q.topic}</div>
+    <p>${i+1}. ${q.q}</p>
+    <div class="opts" id="og1_${i}">${q.o.map((o,j)=>`<button class="opt" id="o1_${i}_${j}" onclick="pickO1(${i},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div>
+    <div class="q-fb" id="qf1_${i}"></div>`;
+    c.appendChild(d);
+  });
+}
+
+function bS2(){
+  m2.shuf=[...q2].sort(()=>Math.random()-.5);
+  document.getElementById('s2Match').innerHTML=`<div class="match-grid">
+    <div class="mcol" id="mWords">${q2.map((w,i)=>`<div class="mi" id="mw${i}" onclick="pickW(${i})">${w.w}</div>`).join('')}</div>
+    <div class="mcol" id="mDefs">${m2.shuf.map((w,i)=>`<div class="mi" id="md${i}" onclick="pickD(${i})">${w.d}</div>`).join('')}</div>
+  </div>
+  <p style="font-size:.75rem;color:var(--mu);text-align:center;margin-top:8px">✅ Matched: <span id="mCnt">0</span> / 10</p>`;
+}
+
+function bS3(){
+  const mc=document.getElementById('s3Mcq');mc.innerHTML='';
+  q3MCQ.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='qblock';
+    d.innerHTML=`<p>${i+1}. ${q.q}</p><div class="opts" id="og3_${i}">${q.o.map((o,j)=>`<button class="opt" id="o3_${i}_${j}" onclick="pickO3(${i},${j},'og3_${i}')">${'ABCD'[j]}. ${o}</button>`).join('')}</div>`;
+    mc.appendChild(d);
+  });
+  const dc=document.getElementById('s3Dd');dc.innerHTML='';
+  q3DD.forEach((item,i)=>{
+    const d=document.createElement('div');d.className='ddi';
+    d.innerHTML=`<div class="ddt">${i+1}. ${item.t}</div><div class="ddb-wrap">
+      <button class="ddb" id="dd${i}do" onclick="pickDD(${i},'do')">✅ DO</button>
+      <button class="ddb" id="dd${i}dont" onclick="pickDD(${i},'dont')">❌ DON'T</button></div>`;
+    dc.appendChild(d);
+  });
+}
+
+function bS4(){
+  const c=document.getElementById('s4Prompts');c.innerHTML='';
+  q4.forEach((p,i)=>{
+    const rows=p.specs.map(s=>`<tr><td>📌 ${s.label}:</td><td>${s.badge?`<span class="appeal-badge ${s.badge}">${s.val}</span>`:`<strong>${s.val}</strong>`}</td></tr>`).join('');
+    const d=document.createElement('div');d.className='prompt-card';
+    d.innerHTML=`<div class="prompt-num">Writing Task ${i+1} of 3</div>
+      <p style="font-size:.82rem;font-weight:700;color:var(--pu);margin-bottom:8px">Write a professional social media post (<strong>${p.wlimit} words</strong>) for the situation below:</p>
+      <table class="spec-table">${rows}</table>
+      <div class="btns-row">
+        <button class="btn-h" onclick="tog('h4_${i}')">💡 Writing Tips</button>
+        <button class="btn-sa" onclick="tog('s4s_${i}')">📖 Sample Answer</button>
+      </div>
+      <div class="hint-box" id="h4_${i}"><h5>💡 Tips for this post:</h5><ul>${p.hints.map(h=>`<li>${h}</li>`).join('')}</ul></div>
+      <textarea id="ta4_${i}" placeholder="Write your post here... (${p.wlimit} words)" oninput="wcSM(this,'wc4_${i}')"></textarea>
+      <div class="wc" id="wc4_${i}">0 words · aim for ${p.wlimit}</div>
+      <div class="sample-box" id="s4s_${i}"><h5>📖 Sample Answer:</h5><p class="stxt">${p.s}</p></div>`;
+    c.appendChild(d);
+  });
+}
+
+function bS5(){
+  const c=document.getElementById('s5Prompts');c.innerHTML='';
+  q5.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.innerHTML=`<div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:.9rem;font-weight:800;color:var(--pu);margin-bottom:8px">${p.ti}</h3>
+      <div class="pbox"><h4>📋 Scenario:</h4><p>${p.sc}</p></div>
+      <div class="btns-row">
+        <button class="btn-h" onclick="tog('h5_${i}')">💡 Structure Hints</button>
+        <button class="btn-sa" onclick="tog('s5s_${i}')">📖 Sample Email</button>
+      </div>
+      <div class="hint-box" id="h5_${i}"><h5>💡 Email Structure Guide:</h5><ul>${p.hints.map(h=>`<li>${h}</li>`).join('')}</ul></div>
+      <textarea id="ta5_${i}" rows="9" placeholder="Write your professional email here... (aim for 80–150 words)" oninput="wcEM(this,'wc5_${i}')"></textarea>
+      <div class="wc" id="wc5_${i}">0 words · aim for 80–150</div>
+      <div class="sample-box" id="s5s_${i}"><h5>📖 Sample Email:</h5><p class="stxt">${p.s}</p></div>
+    </div>`;
+    c.appendChild(d);
+  });
+}
+
+// ═══════════ INTERACTIONS ═══════════
+function tog(id){const e=document.getElementById(id);e.style.display=e.style.display==='block'?'none':'block';}
+function wcSM(ta,cid){const w=wcount(ta);const e=document.getElementById(cid);e.textContent=`${w} words · aim for 50–60`;e.className=w>=50&&w<=60?'wc ok':'wc';}
+function wcEM(ta,cid){const w=wcount(ta);const e=document.getElementById(cid);e.textContent=`${w} words · aim for 80–150`;e.className=w>=80&&w<=150?'wc ok':'wc';}
+function wcount(ta){return ta.value.trim().split(/\s+/).filter(x=>x).length;}
+
+function pickO1(qi,oi){
+  if(a1[qi]!==undefined)return;
+  a1[qi]=oi;
+  const correct=q1[qi].a;
+  document.querySelectorAll(`#og1_${qi} .opt`).forEach(b=>b.classList.add('dis'));
+  const fb=document.getElementById(`qf1_${qi}`);
+  if(oi===correct){
+    document.getElementById(`o1_${qi}_${oi}`).classList.add('cor');
+    fb.textContent='✅ Correct!';fb.className='q-fb ok';
+  }else{
+    document.getElementById(`o1_${qi}_${oi}`).classList.add('wrg');
+    document.getElementById(`o1_${qi}_${correct}`).classList.add('cor');
+    fb.textContent='❌ Not quite — the correct answer is highlighted in green.';fb.className='q-fb no';
+  }
+  if(Object.keys(a1).length===20){
+    const btn=document.getElementById('s1Btn');
+    btn.textContent='See My Score 🏆';
+  }
+}
+function pickO3(qi,oi,gid){document.querySelectorAll(`#${gid} .opt`).forEach(b=>b.classList.remove('sel'));document.getElementById(`o3_${qi}_${oi}`).classList.add('sel');a3m[qi]=oi;}
+function pickDD(i,c){['do','dont'].forEach(x=>document.getElementById(`dd${i}${x}`).classList.remove('do-sel','dont-sel'));document.getElementById(`dd${i}${c}`).classList.add(`${c}-sel`);a3d[i]=c;}
+
+function pickW(i){const e=document.getElementById(`mw${i}`);if(e.classList.contains('mat'))return;document.querySelectorAll('#mWords .mi').forEach(x=>x.classList.remove('sel'));e.classList.add('sel');m2.selW=i;if(m2.selD!==null)doMatch();}
+function pickD(i){const e=document.getElementById(`md${i}`);if(e.classList.contains('mat'))return;document.querySelectorAll('#mDefs .mi').forEach(x=>x.classList.remove('sel'));e.classList.add('sel');m2.selD=i;if(m2.selW!==null)doMatch();}
+function doMatch(){
+  const wi=m2.selW,di=m2.selD;
+  const we=document.getElementById(`mw${wi}`),de=document.getElementById(`md${di}`);
+  if(q2[wi].w===m2.shuf[di].w){
+    we.classList.remove('sel');de.classList.remove('sel');we.classList.add('mat');de.classList.add('mat');
+    m2.count++;document.getElementById('mCnt').textContent=m2.count;
+    if(m2.count===10){
+      tot+=50;updScore();done[1]=true;earnBadge(1);updProg();
+      const r=document.getElementById('s2Res');r.style.display='block';
+      r.innerHTML=`<div class="res"><div class="sc-circle">10/10</div><div class="sc-msg">🎉 Perfect! All words matched!</div>
+      <div class="badge-pop"><span class="bico">🏅</span><h3>Vocab Champion!</h3><p>You earned the Email Vocabulary badge!</p></div>
+      <button class="btn btn-p" onclick="goSec(3)" style="margin-top:12px">Next: Email Pro → ✉️</button></div>`;
+      showToast('💾 Great work! Save your progress below.');
+    }
+  }else{
+    we.classList.add('flash');de.classList.add('flash');
+    setTimeout(()=>{we.classList.remove('flash','sel');de.classList.remove('flash','sel');},420);
+  }
+  m2.selW=null;m2.selD=null;
+}
+
+// ═══════════ CHECKS ═══════════
+function checkS1(){
+  if(Object.keys(a1).length<20){alert('⚠️ Please answer all 20 questions before checking!');return;}
+  const sc=q1.filter((_,i)=>a1[i]===q1[i].a).length;
+  tot+=sc*4;updScore();
+  const pass=sc>=14;
+  const r=document.getElementById('s1Res');r.style.display='block';
+  r.innerHTML=`<div class="res"><div class="sc-circle">${sc}/20</div>
+  <div class="sc-msg">${pass?'🎉 Excellent! You passed!':'😊 You need 14/20. Review the highlighted answers above!'}</div>
+  ${pass?`<div class="badge-pop"><span class="bico">🏅</span><h3>Social Media Star!</h3><p>You earned the Social Media Knowledge badge!</p></div>
+  <button class="btn btn-p" onclick="goSec(2)" style="margin-top:12px">Next: Email Vocab → 📧</button>`
+  :`<button class="btn btn-s" onclick="retryS1()" style="margin-top:12px">🔄 Try Again</button>`}</div>`;
+  document.getElementById('s1Btn').style.display='none';
+  if(pass){done[0]=true;earnBadge(0);updProg();showToast('🏅 Badge earned! Save your progress below.');}
+}
+
+function retryS1(){a1={};document.getElementById('s1Res').style.display='none';document.getElementById('s1Btn').style.display='inline-block';bS1();}
+
+function checkS3(){
+  if(Object.keys(a3m).length<8||Object.keys(a3d).length<7){alert('⚠️ Please answer ALL MCQs and ALL Do/Don\'t items!');return;}
+  let sc=0;
+  q3MCQ.forEach((q,i)=>{
+    document.querySelectorAll(`#og3_${i} .opt`).forEach(b=>b.classList.add('dis'));
+    if(a3m[i]===q.a){sc++;document.getElementById(`o3_${i}_${q.a}`).classList.add('cor');}
+    else{document.getElementById(`o3_${i}_${a3m[i]}`).classList.add('wrg');document.getElementById(`o3_${i}_${q.a}`).classList.add('cor');}
+  });
+  q3DD.forEach((item,i)=>{
+    document.getElementById(`dd${i}do`).classList.add('dis');document.getElementById(`dd${i}dont`).classList.add('dis');
+    if(a3d[i]===item.a){sc++;document.getElementById(`dd${i}${item.a}`).className=`ddb dis ${item.a==='do'?'cor-do':'cor-dont'}`;}
+    else{document.getElementById(`dd${i}${a3d[i]}`).className='ddb dis wrg-pick';document.getElementById(`dd${i}${item.a}`).className=`ddb dis ${item.a==='do'?'cor-do':'cor-dont'}`;}
+  });
+  const pass=sc>=11;tot+=sc*4;updScore();
+  const r=document.getElementById('s3Res');r.style.display='block';
+  r.innerHTML=`<div class="res"><div class="sc-circle">${sc}/15</div>
+  <div class="sc-msg">${pass?'🎉 Great work! You passed!':'😊 You need 11/15.'}</div>
+  ${pass?`<div class="badge-pop"><span class="bico">🏅</span><h3>Email Expert!</h3><p>You earned the Professional Email Skills badge!</p></div>
+  <button class="btn btn-p" onclick="goSec(4)" style="margin-top:12px">Next: SM Writing → ✍️</button>`
+  :`<button class="btn btn-s" onclick="retryS3()" style="margin-top:12px">🔄 Try Again</button>`}</div>`;
+  document.getElementById('s3Btn').style.display='none';
+  if(pass){done[2]=true;earnBadge(2);updProg();showToast('🏅 Badge earned! Save your progress below.');}
+}
+
+function retryS3(){a3m={};a3d={};document.getElementById('s3Res').style.display='none';document.getElementById('s3Btn').style.display='inline-block';bS3();}
+
+function checkS4(){
+  for(let i=0;i<3;i++){if(wcount(document.getElementById(`ta4_${i}`))<20){alert(`⚠️ Please write at least 20 words in Task ${i+1}!`);return;}}
+  tot+=30;updScore();done[3]=true;earnBadge(3);updProg();
+  const r=document.getElementById('s4Res');r.style.display='block';
+  r.innerHTML=`<div class="res"><div class="badge-pop"><span class="bico">🏅</span><h3>Content Creator!</h3><p>All 3 social media tasks completed!</p></div>
+  <button class="btn btn-p" onclick="goSec(5)" style="margin-top:12px">Next: Email Writing → 📝</button></div>`;
+  document.getElementById('s4Btn').style.display='none';
+  showToast('🏅 Badge earned! Save your progress below.');
+}
+
+function checkS5(){
+  for(let i=0;i<3;i++){if(wcount(document.getElementById(`ta5_${i}`))<30){alert(`⚠️ Please write at least 30 words in Email ${i+1}!`);return;}}
+  tot+=30;updScore();done[4]=true;earnBadge(4);updProg();
+  document.getElementById('nC').classList.remove('locked');
+  const r=document.getElementById('s5Res');r.style.display='block';
+  r.innerHTML=`<div class="res"><div class="badge-pop"><span class="bico">🏅</span><h3>Professional Writer!</h3><p>All 3 email writing tasks completed!</p></div>
+  <div class="all-done-box"><h3>🎉 ALL SECTIONS COMPLETE!</h3><p>You are officially Exam Ready! Go claim your certificate!</p>
+  <button class="btn" style="background:#fff;color:var(--pu);font-weight:800" onclick="goSec('cert')">🎓 Get My Certificate!</button></div></div>`;
+  document.getElementById('s5Btn').style.display='none';
+  showToast('🎉 All done! Save your final progress below.');
+}
+
+// ═══════════ SAVE / LOAD ═══════════
+function gatherState(){
+  // collect textarea content
+  const ta4=[0,1,2].map(i=>{const el=document.getElementById(`ta4_${i}`);return el?el.value:'';});
+  const ta5=[0,1,2].map(i=>{const el=document.getElementById(`ta5_${i}`);return el?el.value:'';});
+  const completedSections=done.reduce((acc,v,i)=>{if(v)acc.push(i+1);return acc;},[]);
+  return {
+    version:1,
+    savedAt:new Date().toLocaleString('en-GB'),
+    totalScore:tot,
+    done:[...done],
+    completedSections,
+    s1Answers:{...a1},
+    s2MatchCount:m2.count,
+    s3McqAnswers:{...a3m},
+    s3DdAnswers:{...a3d},
+    s4Writing:ta4,
+    s5Writing:ta5
+  };
+}
+
+function saveProgress(){
+  const state=gatherState();
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const secsDone=state.completedSections.length;
+  a.href=url;
+  a.download=`LSC1103_ExamPrep_Progress_Sec${secsDone}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Progress saved! Share the file with your teacher or keep it to continue later.');
+}
+
+function loadProgress(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const s=JSON.parse(e.target.result);
+      if(!s.version||s.version!==1){alert('⚠️ This file does not match the LSC 1103 Exam Prep format.');return;}
+
+      // Restore state
+      tot=s.totalScore||0;
+      done=s.done||[false,false,false,false,false];
+      a1=s.s1Answers||{};
+      a3m=s.s3McqAnswers||{};
+      a3d=s.s3DdAnswers||{};
+
+      // Restore textareas after DOM rebuild
+      setTimeout(()=>{
+        (s.s4Writing||[]).forEach((v,i)=>{const el=document.getElementById(`ta4_${i}`);if(el){el.value=v;wcSM(el,`wc4_${i}`);}});
+        (s.s5Writing||[]).forEach((v,i)=>{const el=document.getElementById(`ta5_${i}`);if(el){el.value=v;wcEM(el,`wc5_${i}`);}});
+
+        // Restore S1 selections (visual only)
+        Object.keys(a1).forEach(qi=>{
+          const oi=a1[qi];
+          const btn=document.getElementById(`o1_${qi}_${oi}`);
+          if(btn)btn.classList.add('sel');
+        });
+        // Restore S3 MCQ selections
+        Object.keys(a3m).forEach(qi=>{
+          const oi=a3m[qi];
+          const btn=document.getElementById(`o3_${qi}_${oi}`);
+          if(btn)btn.classList.add('sel');
+        });
+        // Restore S3 DD selections
+        Object.keys(a3d).forEach(i=>{
+          const c=a3d[i];
+          const btn=document.getElementById(`dd${i}${c}`);
+          if(btn)btn.classList.add(`${c}-sel`);
+        });
+      },200);
+
+      updScore();updProg();
+      done.forEach((v,i)=>{if(v)earnBadge(i);});
+      if(done.every(Boolean))document.getElementById('nC').classList.remove('locked');
+
+      showToast(`✅ Progress loaded! Sections completed: ${s.completedSections.join(', ')||'none yet'}`);
+      goSec('home');
+    }catch(err){alert('⚠️ Could not read this file. Please make sure it is a valid LSC 1103 progress file.');}
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+// ═══════════ CERT ═══════════
+function makeCert(){
+  const n=document.getElementById('cName').value.trim()||'Student Name';
+  document.getElementById('cNameOut').textContent=n;
+  document.getElementById('cScore').textContent=tot;
+  document.getElementById('cDate').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('certBox').style.display='block';
+  document.getElementById('certBox').scrollIntoView({behavior:'smooth'});
+}
+function shareCert(){
+  if(navigator.share){navigator.share({title:'LSC 1103 Exam Ready Certificate',text:`I completed all LSC 1103 Exam Prep activities and earned ${tot} points! 🎓`});}
+  else{alert('📋 Take a screenshot of your certificate to share with your teacher!');}
+}
+
+// ═══════════ TOAST ═══════════
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ═══════════ NAV ═══════════
+function goSec(id){
+  if(id==='cert'&&!done.every(Boolean)){alert('⚠️ Complete all 5 sections first to unlock your certificate!');return;}
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  if(id==='home'){document.getElementById('home-section').classList.add('active');document.querySelector('.nb').classList.add('active');}
+  else if(id==='cert'){document.getElementById('cert-section').classList.add('active');document.getElementById('nC').classList.add('active');}
+  else{document.getElementById('s'+id).classList.add('active');document.getElementById('n'+id).classList.add('active');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function earnBadge(i){document.getElementById('b'+i).classList.add('earned');}
+function updScore(){document.getElementById('totScore').textContent=tot;}
+function updProg(){
+  const cnt=done.filter(Boolean).length;
+  document.getElementById('doneCnt').textContent=cnt;
+  document.getElementById('pbFill').style.width=(cnt/5*100)+'%';
+  document.getElementById('pbLbl').textContent=`${cnt} / 5 sections completed`;
+  ['n1','n2','n3','n4','n5'].forEach((id,i)=>{if(done[i])document.getElementById(id).classList.add('done');});
+  if(done.every(Boolean))document.getElementById('nC').classList.remove('locked');
+}
+
+buildAll();
+</script>
+</body>
+</html>
